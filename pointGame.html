@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake</title>
+</head>
+<header>
+    <a>How many points can you get?</a>
+</header>
+<body>
+
+    <canvas id="canvas" width="500" height="500"></canvas>
+
+    <script>
+       let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let rows = 20;
+        let cols = 20;
+        let snake = [{
+            x: 10,
+            y: 10
+        }];
+
+        let food;
+        let showCount = 0;
+        let record = 0;
+        let newRecord =""
+
+        let cellWidth = canvas.width / cols;
+        let cellHeight = canvas.height / rows;
+        let direction = 'STOP';
+        let foodCollected = false;
+
+        placeFood();
+
+        setInterval(gameLoop, 60);
+
+        document.addEventListener('keydown', keyDown);
+
+        draw();
+
+        function draw() {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+
+            snake.forEach(part => add(part.x, part.y));
+
+            ctx.fillStyle = 'yellow';
+            add(food.x, food.y); // Food
+
+            ctx.fillStyle = 'red'
+            ctx.font = '20px Arial';
+            ctx.fillText(showCount, 10, 20)
+
+            requestAnimationFrame(draw);
+
+            ctx.fillStyle = 'yellow'
+            ctx.font = '40px Arial';
+            ctx.fillText(record, 240, 40)
+
+            ctx.fillStyle = 'yellow'
+            ctx.font = '60px Arial';
+            ctx.fillText(newRecord, 100, 170)
+            
+        }
+
+        function GameOver() {
+            if (snake[0].x < 0 ||
+                snake[0].x > cols -1 ||
+                snake[0].y < 0||
+                snake[0].y > rows
+                ) {
+                    snake =[{
+                        x: 10,
+                        y: 10
+                    }];
+                    direction = 'STOP'
+                    placeFood();
+                    if (showCount > record) {
+                    record = showCount
+                    showCount = 0 
+                    newRecord = "New Record!"
+                    
+                    }
+                    else showCount = 0
+                    
+
+                    
+                }
+
+           
+        }
+
+        function placeFood() {
+            let randomX = Math.floor(Math.random() * cols);
+            let randomY = Math.floor(Math.random() * rows);
+
+            food = {
+                x: randomX,
+                y: randomY
+            };
+        }
+
+        function add(x, y) {
+            ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth - 1, cellHeight - 1);
+        }
+
+        function shiftSnake() {
+            for (let i = snake.length -1; i > 0; i--) {
+                const part = snake [i];
+                const lastPart = snake[i - 1]; 
+                part.x = lastPart.x;
+                part.y = lastPart.y;
+                
+            }
+           
+
+        }
+
+        function gameLoop() {
+            GameOver();
+
+            if (foodCollected) {
+                showCount = showCount + 1;
+                foodCollected = false;
+            shiftSnake();
+            }
+           
+            
+            if (direction == 'LEFT') {
+                snake[0].x--;
+                newRecord = ""
+            }
+
+            if (direction == 'RIGHT') {
+                snake[0].x++;
+                newRecord = ""
+
+            }
+
+            if (direction == 'UP') {
+                snake[0].y--;
+                newRecord = ""
+            }
+
+            if (direction == 'DOWN') {
+                snake[0].y++;
+                newRecord = ""
+            }
+            if (direction == 'STOP') {
+                snake[0].y;
+            }
+            if (snake[0].x == food.x &&
+                snake[0].y == food.y) {
+                foodCollected = true;
+
+                placeFood();
+                
+            }
+        }
+
+
+
+        function keyDown(e) {
+            if (e.keyCode == 37) {
+                direction = 'LEFT';
+            }
+            if (e.keyCode == 38) {
+                direction = 'UP';
+            }
+            if (e.keyCode == 39) {
+                direction = 'RIGHT';
+            }
+            if (e.keyCode == 40) {
+                direction = 'DOWN';
+            }
+           
+
+        }
+
+        
+
+    </script>
+</body>
+<footer>
+    <p>Thanks for playing :)</p>
+</footer>
+</html>
